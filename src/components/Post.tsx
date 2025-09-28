@@ -4,6 +4,7 @@ import PostInfo from "./PostInfo";
 import PostInteraction from "./PostInteractions";
 import { imagekit } from "@/utils";
 import Video from "./Video";
+import Link from "next/link";
 
 interface FileDetailsResponse {
   width: number;
@@ -14,7 +15,7 @@ interface FileDetailsResponse {
   customMetadata?: { sensitive: boolean };
 }
 
-const Post = async () => {
+const Post = async ({ type }: { type?: "status" | "comment" }) => {
   const getFileDetails = async (
     fileId: string
   ): Promise<FileDetailsResponse> => {
@@ -48,29 +49,62 @@ const Post = async () => {
         <span>Mom reposted</span>
       </div>
       {/* POST CONTENT */}
-      <div className="flex gap-4">
+      {/* <div className="flex gap-4"> */}
+
+      <div className={`flex gap-4 ${type === "status" && "flex-col"}`}>
         {/* AVATAR  */}
-        <div className="relative w-10 h-10 rounded-full overflow-hidden">
+        <div
+          className={`${
+            type === "status" && "hidden"
+          } relative w-10 h-10 rounded-full overflow-hidden`}
+        >
           <Image path="general/avatar2.png" alt="" w={100} h={100} tr={true} />
         </div>
         {/* CONTENT */}
         <div className="flex-1 flex flex-col gap-2">
           {/* TOP */}
-          <div className="flex items-center jusstify-between gap-2">
-            <div className="flex items-center gap-2 flex-wrap">
-              <h1 className="text-md font-bold">Connor</h1>
-              <span className="text-textGray">@everything_is_awesome</span>
-              <span className="text-textGray">1 day ago</span>
-            </div>
+          <div className="w-full flex justify-between">
+            <Link href={`/everything_is_awesome`} className="flex gap-4">
+              <div
+                className={`${
+                  type !== "status" && "hidden"
+                } relative w-10 h-10 rounded-full overflow-hidden`}
+              >
+                <Image
+                  path="general/avatar2.png"
+                  alt=""
+                  w={100}
+                  h={100}
+                  tr={true}
+                />
+              </div>
+              <div
+                className={`flex items-center gap-2 flex-wrap ${
+                  type === "status" && "flex-col gap-0 !items-start"
+                }`}
+              >
+                <h1 className="text-md font-bold">Connor</h1>
+                <span
+                  className={`text-textGray ${type === "status" && "text-sm"}`}
+                >
+                  @everything_is_awesome
+                </span>
+                {type !== "status" && (
+                  <span className="text-textGray">1 day ago</span>
+                )}
+              </div>
+            </Link>
             <PostInfo />
           </div>
           {/* TEXT & MEDIA */}
-          <p className="">
-            Lorem ipsum dolor sit amet consectetur, adipisicing elit. Omnis
-            consequatur porro cumque sapiente error, temporibus labore minima.
-            Nam harum, qui ut libero deleniti porro maiores unde voluptatum
-            eligendi, nesciunt dicta.
-          </p>
+          <Link href={`/everything_is_awesome/status/123`}>
+            <p className={`${type === "status" && "text-lg"}`}>
+              Lorem ipsum dolor sit amet consectetur, adipisicing elit. Omnis
+              consequatur porro cumque sapiente error, temporibus labore minima.
+              Nam harum, qui ut libero deleniti porro maiores unde voluptatum
+              eligendi, nesciunt dicta.
+            </p>
+          </Link>
           {/* <Image path="general/post.jpeg" alt="" w={600} h={600} /> */}
           {fileDetails && fileDetails.fileType === "image" ? (
             <Image
@@ -85,6 +119,9 @@ const Post = async () => {
               path={fileDetails.filePath}
               className={fileDetails.customMetadata?.sensitive ? "blur-lg" : ""}
             />
+          )}
+          {type === "status" && (
+            <span className="text-textGray">2:09 PM · Sept 28, 2025</span>
           )}
           <PostInteraction />
         </div>
